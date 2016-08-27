@@ -11,6 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'ClassifiedsController@index');
+
+// Classefieds routes
+Route::resource('classifieds','ClassifiedsController');
+
+// Categories Routes
+Route::resource('categories','CategoriesController');
