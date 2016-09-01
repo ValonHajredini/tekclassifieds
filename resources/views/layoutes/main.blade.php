@@ -47,11 +47,16 @@
 <div class="container">
 
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
             @yield('sidebar')
             <h3>Sidebar</h3>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-9">
+            @if(Session::has('message'))
+                    <div class="alert alert-info">
+                        {!!Session::get('message') !!}
+                    </div>
+                @endif
             @yield('content')
         </div>
     </div>

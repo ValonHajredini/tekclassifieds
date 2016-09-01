@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Classified;
 
+use Illuminate\Http\Request;
+use App\Commands\StoreClassifiedCommand;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Category;
+use  App\Http\Requests\StoreClassifiedRequest;
+use Illuminate\Support\Facades\Redirect;
 
 class ClassifiedsController extends Controller
 {
@@ -16,7 +21,8 @@ class ClassifiedsController extends Controller
      */
     public function index()
     {
-        return view('classifieds/index');
+        $classifieds = Classified::all();
+        return view('classifieds/index', compact('classifieds'));
     }
 
     /**
@@ -35,9 +41,29 @@ class ClassifiedsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreClassifiedRequest $request)
     {
-        //
+        $title          = $request->input('title');
+        $category_id    = $request->input('category_id');
+        $description    = $request->input('description');
+        $price          = $request->input('price');
+        $condition      = $request->input('condition');
+        $main_image     = $request->file('main_image');
+        $location       = $request->input('location');
+        $email          = $request->input('email');
+        $phone          = $request->input('phone');
+        $owner_id       = 1; //Auth::user()->id;
+        // Check if image is uploaded
+        if ($main_image){
+            $main_image_file_name = $main_image->getClientOriginalName();
+            $main_image->move(public_path('images'), $main_image_file_name);
+        } else {
+            $main_image_file_name = 'no_image.png';
+        }
+            $command = new StoreClassifiedCommand($title, $category_id, $description, $price, $condition, $main_image_file_name, $location, $email, $phone, $owner_id);
+            $this->dispatch($command);
+            return  \Redirect::route('classifieds.index')->with('message', 'Listing created' );
+
     }
 
     /**
@@ -48,7 +74,9 @@ class ClassifiedsController extends Controller
      */
     public function show($id)
     {
-        return view('classifieds/show');
+        $classified = Classified::find($id);
+
+        return view('classifieds/show', compact('classified'));
     }
 
     /**

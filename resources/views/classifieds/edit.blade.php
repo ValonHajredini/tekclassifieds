@@ -2,6 +2,8 @@
 @section('title', 'Edit')
 @section('content')
 
-    This is Edit
+    {!! Form::open(array('url' => 'foo/bar')) !!}
+    //
+    {!! Form::close() !!}
 
 @stop
