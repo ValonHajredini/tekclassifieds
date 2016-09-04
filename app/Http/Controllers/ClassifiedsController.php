@@ -6,10 +6,13 @@ use App\Classified;
 
 use Illuminate\Http\Request;
 use App\Commands\StoreClassifiedCommand;
+use App\Commands\UpdateClassifiedCommand;
+use App\Commands\DestroyClassifiedCommand;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Category;
 use  App\Http\Requests\StoreClassifiedRequest;
+use  App\Http\Requests\UpdateClassifiedRequest;
 use Illuminate\Support\Facades\Redirect;
 use Auth;
 
@@ -59,7 +62,8 @@ class ClassifiedsController extends Controller{
         $location       = $request->input('location');
         $email          = $request->input('email');
         $phone          = $request->input('phone');
-        $owner_id       = 1; //Auth::user()->id;
+        $owner_id       = Auth::user()->id;
+
         // Check if image is uploaded
         if ($main_image){
             $main_image_file_name = $main_image->getClientOriginalName();
@@ -94,7 +98,8 @@ class ClassifiedsController extends Controller{
      */
     public function edit($id)
     {
-        return view('classifieds/edit');
+        $cllassified = Classified::find($id);
+        return view('classifieds/edit', compact('cllassified'));
 
     }
 
@@ -105,9 +110,31 @@ class ClassifiedsController extends Controller{
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateClassifiedRequest $request, $id)
     {
-        //
+        $title          = $request->input('title');
+        $category_id    = $request->input('category_id');
+        $description    = $request->input('description');
+        $price          = $request->input('price');
+        $condition      = $request->input('condition');
+        $main_image     = $request->file('main_image');
+        $location       = $request->input('location');
+        $email          = $request->input('email');
+        $phone          = $request->input('phone');
+        $owner_id       = 1; //Auth::user()->id;
+        $current_image_file_name = Classified::find($id)->main_image;
+
+        // Check if image is uploaded
+        if ($main_image){
+            $main_image_file_name = $main_image->getClientOriginalName();
+            $main_image->move(public_path('images'), $main_image_file_name);
+        } else {
+            $main_image_file_name = $current_image_file_name;
+        }
+        $command = new UpdateClassifiedCommand($id, $title, $category_id, $description, $price, $condition, $main_image_file_name, $location, $email, $phone);
+        $this->dispatch($command);
+        return  \Redirect::route('classifieds.index')->with('message', 'Listing Update' );
+
     }
 
     /**
@@ -118,6 +145,8 @@ class ClassifiedsController extends Controller{
      */
     public function destroy($id)
     {
-        //
+        $command = new DestroyClassifiedCommand($id);
+        $this->dispatch($command);
+        return  \Redirect::route('classifieds.index')->with('message', 'Listing Removed' );
     }
 }

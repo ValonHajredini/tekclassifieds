@@ -33,7 +33,16 @@
                     <p>{!! $classified->description !!}</p>
                 </div>
             </div>
+            @if((!Auth::guest()) and ( Auth::user()->id == $classified->owner_id))
 
+            <div class="pull-right classified-controll">
+                <a href="/classifieds/{!! $classified->id !!}/edit" class="btn btn-default">Edit</a>
+                {!! Form::open(['method' => 'DELETE', 'route'=> ['classifieds.destroy', $classified->id]]) !!}
+                {!! Form::submit('Delete', $attribues = ['class' => 'btn btn-danger']) !!}
+                {!! Form::close() !!}
+            </div>
+
+                @endif
         </div>
     </div>
 
