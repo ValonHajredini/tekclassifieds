@@ -11,9 +11,16 @@ use App\Http\Controllers\Controller;
 use App\Category;
 use  App\Http\Requests\StoreClassifiedRequest;
 use Illuminate\Support\Facades\Redirect;
+use Auth;
 
-class ClassifiedsController extends Controller
-{
+class ClassifiedsController extends Controller{
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('auth', ['except'=> ['index','show','search']]);
+    }
+
     /**
      * Display a listing of the resource.
      *

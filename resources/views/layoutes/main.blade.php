@@ -40,6 +40,14 @@
                 <li class="active"><a href="/">Home</a></li>
                 <li><a href="/classifieds/create">Add listing</a></li>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+                @if(Auth::guest())
+                <li><a href="/auth/login">Login</a></li>
+                <li><a href="/auth/register">Register</a></li>
+                @else
+                <li><a href="/auth/logout">Logout</a></li>
+                    @endif
+            </ul>
         </div><!--/.nav-collapse -->
     </div>
 </nav>
@@ -56,8 +64,21 @@
                     <div class="alert alert-info">
                         {!!Session::get('message') !!}
                     </div>
-                @endif
-            @yield('content')
+            @endif
+            @if(Session::has('error'))
+                    <div class="alert alert-danger">
+                        {!!Session::get('error') !!}
+                    </div>
+             @endif
+
+                @foreach($errors->all() as $error)
+                    <div class="alert alert-danger">
+                        {!! $error!!}
+                    </div>
+
+                @endforeach
+
+                @yield('content')
         </div>
     </div>
 

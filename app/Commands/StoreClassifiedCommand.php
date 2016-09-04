@@ -20,8 +20,6 @@ class StoreClassifiedCommand extends Command implements SelfHandling{
     public $phone;
     public $owner_id = 1;
 
-
-
     public function __construct($title, $category_id, $description, $price, $condition, $main_image, $location, $email, $phone ,$owner_id)
     {
         $this->title        = $title;
